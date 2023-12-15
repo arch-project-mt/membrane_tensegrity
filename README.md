@@ -2,7 +2,7 @@
 ## Initial setup
 - Install Docker ([Official page](https://docs.docker.com/compose/install/))
 
-- You can check if docker and docker-compose is available on your computer by the following command
+- You can check if docker and docker-compose are available on your computer by the following command
 
 ```bash
 docker -v
@@ -16,7 +16,7 @@ Docker version 20.10.13, build a224086
 docker-compose -v
 ```
 
-- After the docker and docker-compose is set up, you can execute the following command to activate the docker environment on your computer
+- After the docker and docker-compose are set up, you can execute the following command to activate the docker environment on your computer
 
 ```bash
 docker-compose up -d
