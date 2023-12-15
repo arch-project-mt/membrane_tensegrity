@@ -59,7 +59,7 @@ $$
 
 $$
 \begin{align}
-\bold{R}&: 3 \times 3\text{ rotation matrix}\notag\\
+\mathbf{R}&: 3 \times 3\text{ rotation matrix}\notag\\
 \vec{v}&: \text{3d translation vector}\notag\\
 n&: \text{the number of vertices}\notag\\
 \vec{m_{t, i}}&: \text{the }i\text{th 3d coordinate of }M_t\notag\\
