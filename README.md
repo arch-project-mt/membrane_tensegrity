@@ -52,7 +52,7 @@ $$
 \begin{align}
 &\min_{M_s} RMSD(M_t, M_s),\notag\\
 &\text{where }RMSD(M_t, M_s) \notag\\
-&= \min_{\bold{R}, \vec{v}}\sqrt{\frac{1}{n}\sum_{i=1}^n||\vec{m_{t,i}} - \bold{R}(\vec{m_{s,i}} - \vec{v})||^2},\notag\\
+&= \min_{\mathbf{R}, \vec{v}}\sqrt{\frac{1}{n}\sum_{i=1}^n||\vec{m_{t,i}} - \mathbf{R}(\vec{m_{s,i}} - \vec{v})||^2},\notag\\
 &s.t. \text{ developability constraints}\notag
 \end{align}
 $$
