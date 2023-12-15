@@ -35,7 +35,7 @@ bash build_rmsd.sh
 ```mermaid
 flowchart LR
 subgraph main_project
-A[Decide the shape of \n membrane tensegrity] --> B[By grasshopper script,\n make 3D strut pattern] --> C[Construct the target membrane tensegrity \n with the real world materials]
+A[Decide the shape of \n membrane tensegrity] --> B[By grasshopper script,\n make 2D strut pattern] --> C[Construct the target membrane tensegrity \n with the real world materials]
 end
 
 subgraph side_project
@@ -45,7 +45,6 @@ E --> G[Evaluate the optimized result]
 end
 ```
 ## TODO
-- Add the workflow of constructing membrane tensegrity
 - Develop and implement the algorithm for solving the following optimization problem
 
 $$
