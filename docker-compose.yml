@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  cmake:
+    container_name: mt
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    tty: true
+    command: /bin/bash
+
+    volumes:
+      - ./src:/usr/src
