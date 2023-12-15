@@ -46,6 +46,7 @@ end
 ```
 ## TODO
 - Develop and implement the algorithm for solving the following optimization problem
+    - One idea is to see the optimization problem as a combinatorial optimization. We can choose which edge should be changed to avoid deformation while keeping RMSD small. The time complexity could be $O(2^n \cdot n)$
 
 $$
 \begin{align}
@@ -53,5 +54,16 @@ $$
 &\text{where }RMSD(M_t, M_s) \notag\\
 &= \min_{\mathbf{R}, \vec{v}}\sqrt{\frac{1}{n}\sum_{i=1}^n||\vec{m_{t,i}} - \mathbf{R}(\vec{m_{s,i}} - \vec{v})||^2},\notag\\
 &s.t. \text{ developability constraints}\notag
+\end{align}
+$$
+
+$$
+\begin{align}
+\bold{R}&: 3 \times 3\text{ rotation matrix}\notag\\
+\vec{v}&: \text{3d translation vector}\notag\\
+n&: \text{the number of vertices}\notag\\
+\vec{m_{t, i}}&: \text{the }i\text{th 3d coordinate of }M_t\notag\\
+\vec{m_{s, i}}&: \text{the }i\text{th 3d coordinate of }M_s\notag\\
+&\text{ for any }1 \leq i \leq n\notag\\
 \end{align}
 $$
