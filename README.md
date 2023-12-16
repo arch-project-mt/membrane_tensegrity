@@ -25,10 +25,21 @@ docker-compose up -d
 ```bash
 docker container exec it mt bash
 ```
-- After entering the docker container, you can compile the C++ file for computing RMSD
+- After entering the docker container, you can compile the C++ file for computing RMSD. The following command makes the executable file by the name of rmsd_calculator
 
 ```bash
 bash build_rmsd.sh
+```
+- After compiling the file, you can compute RMSD by the following command
+
+```bash
+./rmsd_calculator
+```
+
+- If you want to work outside the docker container, you can execute the command outside the container
+```bash
+ocker exec mt bash build_rmsd.sh 
+ocker exec mt ./rmsd_calculator
 ```
 
 ## Project workflow
