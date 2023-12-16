@@ -44,6 +44,23 @@ E --> F[Propose the new optimization problem]
 E --> G[Evaluate the optimized result]
 end
 ```
+## Computational flow
+```mermaid
+flowchart TD
+
+subgraph Inside the grasshopper
+B[Compute the target meshes\n and extract information on vertices and edges] -->|Input coordinates\n and adjacency lists representing edges| A[Python script]
+A --> |Input the vertices and \nedges of simulated meshes| E[Complete the 2D strut patter of the simulated meshes]
+end
+
+
+subgraph Outside the grasshopper
+A -->|Output coordinates\n and adjacency lists representing edges| C[Store the coordinates and adjacensy lists as csv files]
+C --> D[Solve the optimization problem by C++]
+D -->|Input the computation result| A
+end
+```
+
 ## TODO
 - Develop and implement the algorithm for solving the following optimization problem
     - One idea is to see the optimization problem as a combinatorial optimization. We can choose which edge should be changed to avoid deformation while keeping RMSD small. The time complexity could be $O(2^n \cdot n)$
