@@ -38,8 +38,8 @@ bash build_rmsd.sh
 
 - If you want to work outside the docker container, you can execute the command outside the container
 ```bash
-ocker exec mt bash build_rmsd.sh 
-ocker exec mt ./rmsd_calculator
+docker exec mt bash build_rmsd.sh 
+docker exec mt ./rmsd_calculator
 ```
 
 ## Project workflow
