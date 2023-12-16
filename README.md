@@ -74,6 +74,7 @@ $$
 \end{align}
 $$
 - The definition of the variables is as follows:
+
 $$
 \begin{align}
 \mathbf{R}&: 3 \times 3\text{ rotation matrix}\notag\\
