@@ -1,6 +1,5 @@
 import random
 import Rhino.Geometry as rg
-import math
 import csv
 import os
 import subprocess
@@ -9,6 +8,8 @@ import subprocess
 translation_vector = rg.Vector3d(constant, constant, constant)
 main_path = "/Users/koyanobunsho/Desktop/architecture/membrane_tensegrity/src/"
 vertices_num = 10
+
+os.chdir(main_path)
 
 
 def main():
@@ -39,7 +40,7 @@ def to_csv(points, file_name):
 
 
 def call_py_file(file_name):
-    subprocess.call("%s%s" % (main_path, file_name))
+    subprocess.call(["/usr/local/bin/docker", "exec", "mt", "./%s" % (file_name)])
 
 
 def generate_random_points(point_num=vertices_num):
