@@ -35,6 +35,27 @@ Eigen::MatrixXd openMatrixData(std::string fileToOpen) {
       matrixEntries.data(), matrixRowNumber,
       matrixEntries.size() / matrixRowNumber);
 }
+
+Eigen::MatrixXd openMatrixData2(std::string fileToOpen) {
+  std::vector<double> matrixEntries;
+  std::ifstream matrixDataFile(fileToOpen);
+  std::string matrixRowString;
+  std::string matrixEntry;
+  int rowCount = 0;
+  int colCount = 3;
+  while (getline(matrixDataFile, matrixRowString)) {
+    std::stringstream matrixRowStringStream(matrixRowString);
+    while (getline(matrixRowStringStream, matrixEntry, ',')) {
+      matrixEntries.push_back(stod(matrixEntry));
+    }
+    rowCount++;
+  }
+  Eigen::MatrixXd matrix = Eigen::Map<
+      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>>(
+      matrixEntries.data(), rowCount, colCount);
+  return matrix.transpose();
+}
+
 bool getFileStrContent(
     std::string fileName,
     std::vector<std::pair<std::string, std::string>> &pq_pair) {
