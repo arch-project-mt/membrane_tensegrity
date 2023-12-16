@@ -1,8 +1,10 @@
 #ifndef rmsd
 #define rmsd
 #include "rmsd_struct.h"
+#include <cmath>
 
-double CalcRMSD(Eigen::Matrix3Xd P, Eigen::Matrix3Xd Q, std::vector<double> W) {
+double CalcRMSD(Eigen::Matrix3Xd P, Eigen::Matrix3Xd Q, std::vector<double> W,
+                bool output_each_distance = false) {
   if (P.cols() != Q.cols())
     throw "CalcRMSD(): input data mis-match";
   Eigen::MatrixXd H = Eigen::MatrixXd::Zero(3, 3);
@@ -17,6 +19,18 @@ double CalcRMSD(Eigen::Matrix3Xd P, Eigen::Matrix3Xd Q, std::vector<double> W) {
   (d > 0.0) ? d = 1.0 : d = -1.0;
   I(2, 2) = d;
   Eigen::Matrix3d R = svd.matrixV() * I * svd.matrixU().transpose();
+  if (output_each_distance) {
+    Eigen::Matrix3Xd RQ = R * Q;
+    std::ofstream each_distance;
+    std::string main_path =
+        "/Users/koyanobunsho/Desktop/architecture/membrane_tensegrity/src/";
+    each_distance.open(main_path + "each_distance_result.csv");
+    for (int i = 0; i < p_cols_num; i++) {
+      auto dist = (P.col(i) - RQ.col(i));
+      each_distance << dist.norm() << ",";
+    }
+    each_distance.close();
+  }
   double sd = 0;
   for (int i = 0; i < p_cols_num; i++) {
     sd += W[i] * P.col(i).transpose() * P.col(i);
