@@ -23,12 +23,23 @@ docker-compose up -d
 ```
 - You can enter the docker container by the following command
 ```bash
-docker container exec it mt bash
+docker container exec -it mt bash
 ```
-- After entering the docker container, you can compile the C++ file for computing RMSD
+- After entering the docker container, you can compile the C++ file for computing RMSD. The following command makes the executable file by the name of rmsd_calculator
 
 ```bash
 bash build_rmsd.sh
+```
+- After compiling the file, you can compute RMSD by the following command
+
+```bash
+./rmsd_calculator
+```
+
+- If you want to work outside the docker container, you can execute the command outside the container
+```bash
+docker exec mt bash build_rmsd.sh 
+docker exec mt ./rmsd_calculator
 ```
 
 ## Project workflow
@@ -85,3 +96,11 @@ n&: \text{the number of vertices}\notag\\
 &\text{ for any }1 \leq i \leq n\notag\\
 \end{align}
 $$
+
+- One idea to solve the optimization problem is as follows
+
+```mermaid
+flowchart TD
+A[Optimize R and v] --> B[Optimize M_s against devlopability constraints]
+B --> A
+```

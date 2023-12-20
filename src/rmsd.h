@@ -22,8 +22,7 @@ double CalcRMSD(Eigen::Matrix3Xd P, Eigen::Matrix3Xd Q, std::vector<double> W,
   if (output_each_distance) {
     Eigen::Matrix3Xd RQ = R * Q;
     std::ofstream each_distance;
-    std::string main_path =
-        "/Users/koyanobunsho/Desktop/architecture/membrane_tensegrity/src/";
+    std::string main_path = "./";
     each_distance.open(main_path + "each_distance_result.csv");
     for (int i = 0; i < p_cols_num; i++) {
       auto dist = (P.col(i) - RQ.col(i));

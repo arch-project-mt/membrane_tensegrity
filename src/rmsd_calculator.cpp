@@ -4,8 +4,7 @@
 #include <random>
 
 int main(int argc, char **argv) {
-  std::string main_path =
-      "/Users/koyanobunsho/Desktop/architecture/membrane_tensegrity/src/";
+  std::string main_path = "./";
   std::ofstream myfile;
 
   myfile.open(main_path + "rmsd_res.csv");
@@ -26,7 +25,7 @@ int main(int argc, char **argv) {
     default_weights.push_back(1.0);
   }
   ConformationPair wPQ_pair = MoveToOrigin(p, q, default_weights);
-  double rmsd_result = CalcRMSD(wPQ_pair.P, wPQ_pair.Q, default_weights);
+  double rmsd_result = CalcRMSD(wPQ_pair.P, wPQ_pair.Q, default_weights, false);
   myfile << rmsd_result << ",";
   // openMatrixData2 assumes the
   // csv is n rows 3 columns, where n is the number
