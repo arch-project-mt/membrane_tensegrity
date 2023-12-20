@@ -1,10 +1,10 @@
 #ifndef rmsd
 #define rmsd
-#include "rmsd_struct.h"
+#include "rmsd_io.h"
 #include <cmath>
 
-double CalcRMSD(Eigen::Matrix3Xd P, Eigen::Matrix3Xd Q, std::vector<double> W,
-                bool output_each_distance = false) {
+RMSDResult CalcRMSD(Eigen::Matrix3Xd P, Eigen::Matrix3Xd Q,
+                    std::vector<double> W, bool output_each_distance = false) {
   if (P.cols() != Q.cols())
     throw "CalcRMSD(): input data mis-match";
   Eigen::MatrixXd H = Eigen::MatrixXd::Zero(3, 3);
@@ -39,8 +39,9 @@ double CalcRMSD(Eigen::Matrix3Xd P, Eigen::Matrix3Xd Q, std::vector<double> W,
   sd -= 2 * RH.trace();
   if (sd < 0)
     sd = 0;
-  double rmsd_result;
-  rmsd_result = std::sqrt(sd / p_cols_num);
+  RMSDResult rmsd_result;
+  rmsd_result.rmsd_result = std::sqrt(sd / p_cols_num);
+  rmsd_result.optR = R;
   return rmsd_result;
 }
 

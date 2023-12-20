@@ -18,3 +18,8 @@ struct AcNumberPQpdb {
   std::string pdb_id;
 };
 #endif
+
+struct RMSDResult {
+  double rmsd_result;
+  Eigen::Matrix3d optR;
+};
