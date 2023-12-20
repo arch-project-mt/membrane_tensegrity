@@ -74,7 +74,6 @@ end
 
 ## TODO
 - Develop and implement the algorithm for solving the following optimization problem
-    - One idea is to see the optimization problem as a combinatorial optimization. We can choose which edge should be changed to avoid deformation while keeping RMSD small. The time complexity could be $O(2^n \cdot n)$
 
 $$
 \begin{align}
@@ -101,6 +100,6 @@ $$
 
 ```mermaid
 flowchart TD
-A[Optimize R and v] --> B[Optimize M_s against devlopability constraints]
+A[Optimize M_s against devlopability constraints] --> B[Optimize R and v]
 B --> A
 ```
