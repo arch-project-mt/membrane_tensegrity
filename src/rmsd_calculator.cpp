@@ -52,8 +52,9 @@ int main(int argc, char **argv) {
       main_path + "original_coordinates.csv"); // Specify the path of
                                                // coordinates of one structure.
   q_3 = openMatrixData2(
-      main_path + "updated_coordinates.csv"); // Specify the path of coordinates
-                                              // of the other structure.
+      main_path +
+      "updated_coordinates1.csv"); // Specify the path of coordinates
+                                   // of the other structure.
   std::vector<double> default_weights3;
   for (int i = 0; i < p_3.cols(); i++) {
     default_weights3.push_back(1.0);
