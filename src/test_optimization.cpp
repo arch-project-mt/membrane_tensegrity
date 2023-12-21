@@ -1,6 +1,5 @@
-#include <fstream>
-#include <geometry.h>
-#include <rmsd.h>
+#include "geometry.h"
+#include "rmsd.h"
 const int NUM_VERTICES = 8;
 
 int main() {

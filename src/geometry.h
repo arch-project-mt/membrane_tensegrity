@@ -3,6 +3,7 @@
 #include "eigen3/Eigen/Dense"
 #include "eigen3/Eigen/Sparse"
 #include "eigen3/Eigen/SparseLU"
+#include <fstream>
 #include <iostream>
 #include <unordered_map>
 #include <vector>
