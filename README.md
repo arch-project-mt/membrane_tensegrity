@@ -29,17 +29,21 @@ docker container exec -it mt bash
 
 ```bash
 bash build_rmsd.sh
+bash build_optimization.sh
 ```
 - After compiling the file, you can compute RMSD by the following command
 
 ```bash
 ./rmsd_calculator
+./test_optimization
 ```
 
 - If you want to work outside the docker container, you can execute the command outside the container
 ```bash
 docker exec mt bash build_rmsd.sh 
+docker exec mt bash build_optimization.sh 
 docker exec mt ./rmsd_calculator
+docker exec mt ./test_optimization
 ```
 
 ## Project workflow
