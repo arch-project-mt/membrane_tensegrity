@@ -29,17 +29,21 @@ docker container exec -it mt bash
 
 ```bash
 bash build_rmsd.sh
+bash build_optimization.sh
 ```
 - After compiling the file, you can compute RMSD by the following command
 
 ```bash
 ./rmsd_calculator
+./test_optimization
 ```
 
 - If you want to work outside the docker container, you can execute the command outside the container
 ```bash
 docker exec mt bash build_rmsd.sh 
+docker exec mt bash build_optimization.sh 
 docker exec mt ./rmsd_calculator
+docker exec mt ./test_optimization
 ```
 
 ## Project workflow
@@ -74,7 +78,6 @@ end
 
 ## TODO
 - Develop and implement the algorithm for solving the following optimization problem
-    - One idea is to see the optimization problem as a combinatorial optimization. We can choose which edge should be changed to avoid deformation while keeping RMSD small. The time complexity could be $O(2^n \cdot n)$
 
 $$
 \begin{align}
@@ -101,6 +104,6 @@ $$
 
 ```mermaid
 flowchart TD
-A[Optimize R and v] --> B[Optimize M_s against devlopability constraints]
+A[Optimize M_s against devlopability constraints] --> B[Optimize R and v]
 B --> A
 ```
