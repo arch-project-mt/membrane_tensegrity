@@ -46,6 +46,14 @@ docker exec mt ./rmsd_calculator
 docker exec mt ./test_optimization
 ```
 
+##### (Optional) Build with CMake
+```bash
+mkdir build
+cd build
+cmake ..  # or cmake -DCMAKE_BUILD_TYPE=Release .. 
+make
+```
+
 ## Project workflow
 ```mermaid
 flowchart LR
