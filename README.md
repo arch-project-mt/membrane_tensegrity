@@ -46,7 +46,9 @@ docker exec mt ./rmsd_calculator
 docker exec mt ./test_optimization
 ```
 
-##### (Optional) Build with CMake
+##### (Alternative) Build with CMake
+- Include or exclude file in `CMakeLists.txt`
+- Build & execute with `bash build.sh` OR using the following commands
 ```bash
 mkdir build
 cd build
