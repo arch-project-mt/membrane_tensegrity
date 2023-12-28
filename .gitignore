@@ -5,7 +5,7 @@
 *.slo
 *.lo
 *.o
-# *.obj     # wavefront obj files use .obj
+#*.obj     # wavefront obj files use .obj
 
 # Precompiled Headers
 *.gch

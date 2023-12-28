@@ -1,35 +1,25 @@
 #include "geometry.h"
 #include "rmsd.h"
-// #include "data_io.hpp"
+#include "data_io.hpp"
+
 const int NUM_VERTICES = 8;
 
-void readObj(std::string filename,
-             Eigen::MatrixXd &V,
-             Eigen::MatrixXd &E,
-             Eigen::MatrixXi &F);
 
 int main()
 {
-  // take input from an obj file
+  // initialize data structures
   Eigen::MatrixXd V = Eigen::MatrixXd();
   Eigen::MatrixXd E = Eigen::MatrixXd();
-  Eigen::MatrixXi F = Eigen::MatrixXi();
-  readObj("../test_cube.obj", V, E, F);
-
+  Eigen::MatrixXi F = Eigen::MatrixXi();  
   std::vector<Eigen::Vector3d> cube;
-  for (int i = 0; i < V.rows(); i++)
-  {
-    cube.push_back(Eigen::Vector3d(V.row(i)));
-  }
   std::vector<std::pair<int, int>> edges;
-  for (int i = 0; i < E.rows(); i++)
-  {
-    edges.push_back({E(i, 0), E(i, 1)});
-  }
+
+  dataIO::readObj("../iofiles/target_cube.obj", V, E, F);
+  dataIO::fitInputDataStructure(V, E, F, cube, edges);
 
   AdjacencyType adjacencyList;
   MakeAdjacencyList(cube, edges, adjacencyList);
-  writeIndicesToCSV(adjacencyList, "original_edges.csv");
+  writeIndicesToCSV(adjacencyList, "../iofiles/original_edges.csv");
   for (auto &vertex : adjacencyList)
   {
     const VertexInfo &p = vertex.first;
@@ -50,16 +40,40 @@ int main()
     Eigen::Vector3d di = d.row(i);
     updatedCube.push_back(cube[i] + di);
   }
-  WriteToCSV(updatedCube, "updated_coordinates1.csv");
+  
+  // WriteToCSV(updatedCube, "../iofiles/updated_coordinates1.csv");
+  dataIO::fitOutputDataStructure(V, E, F, updatedCube, edges);
+  dataIO::writeObj("../iofiles/test_cube_updated1.obj", V, E, F);
+
   bool is_improved = true;
   int max_iteration = 10;
   int iter_num = 1;
   while (iter_num < max_iteration && is_improved)
   {
-    Eigen::MatrixXd target_structure =
-        openMatrixData2("original_coordinates.csv");
-    Eigen::MatrixXd updated_structure = openMatrixData2(
-        "updated_coordinates" + std::to_string(iter_num) + ".csv");
+    // Eigen::MatrixXd target_structure =
+    //     openMatrixData2("../iofiles/original_coordinates.csv");
+    // Eigen::MatrixXd updated_structure = openMatrixData2(
+    //     "../iofiles/updated_coordinates" + 
+    //     std::to_string(iter_num) + ".csv");
+
+    // Eigen::MatrixXd target_structure;
+    // Eigen::MatrixXd updated_structure;
+    Eigen::MatrixXd V;
+    Eigen::MatrixXd E;
+    Eigen::MatrixXi F;
+    dataIO::readObj("../iofiles/target_cube.obj", V, E, F);  
+    dataIO::fitInputDataStructure(V, E, F, cube, edges);
+    Eigen::MatrixXd target_structure = V.transpose();
+
+    std::cout << target_structure << std::endl;
+    dataIO::readObj(
+      "../iofiles/test_cube_updated" + std::to_string(iter_num) + ".obj", 
+      V, E, F);
+    dataIO::fitInputDataStructure(V, E, F, updatedCube, edges);
+    Eigen::MatrixXd updatedCube = V.transpose();
+    
+    
+
     std::vector<double> default_weights;
     for (int i = 0; i < target_structure.cols(); i++)
     {
@@ -110,91 +124,14 @@ int main()
     }
     is_improved = res.rmsd_result - new_res.rmsd_result > 0;
     iter_num++;
-    WriteToCSV(updatedCube,
-               "updated_coordinates" + std::to_string(iter_num) + ".csv");
+
+    // WriteToCSV(updatedCube,
+    //            "../iofiles/updated_coordinates" + std::to_string(iter_num) + ".csv");
+    dataIO::fitOutputDataStructure(V, E, F, updatedCube, edges);
+    dataIO::writeObj(
+      "../iofiles/test_cube_updated" + std::to_string(iter_num) + ".obj",
+       V, E, F);
   }
   std::cout << iter_num << std::endl;
   return 0;
-}
-
-void readObj(std::string filename,
-             Eigen::MatrixXd &V,
-             Eigen::MatrixXd &E,
-             Eigen::MatrixXi &F)
-{
-  std::cout << "Reading " << filename << std::endl;
-
-  std::ifstream infile(filename);
-  std::string line, v, f;
-
-  while (std::getline(infile, line))
-  {
-    if (line[0] == 'v' && line[1] == ' ')
-    {
-      std::istringstream iss(line);
-      double x, y, z;
-      iss >> v >> x >> y >> z;
-      V.conservativeResize(V.rows() + 1, 3);
-      V.row(V.rows() - 1) << x, y, z;
-    }
-
-    else if (line[0] == 'l' && line[1] == ' ')
-    {
-      std::istringstream iss(line);
-      int x, y;
-      iss >> f >> x >> y;
-      E.conservativeResize(E.rows() + 1, 2);
-      E.row(E.rows() - 1) << x - 1, y - 1;
-    }
-
-    else if (line[0] == 'f' && line[1] == ' ')
-    {
-      std::istringstream iss(line);
-      int x, y, z;
-      iss >> f >> x >> y >> z;
-      F.conservativeResize(F.rows() + 1, 3);
-      F.row(F.rows() - 1) << x - 1, y - 1, z - 1;
-    }
-  }
-  infile.close();
-}
-
-// void getEdgeList(Eigen::MatrixXd &V,
-//                  Eigen::MatrixXd &E,
-//                  Eigen::MatrixXi &F,
-//                  std::vector<std::pair<int, int>> &edges)
-// {
-//   for (int i = 0; i < F.rows(); i++)
-//   {
-//     edges.push_back({F(i, 0), F(i, 1)});
-//     edges.push_back({F(i, 1), F(i, 2)});
-//     edges.push_back({F(i, 2), F(i, 0)});
-//   }
-// }
-
-void writeObj(std::string filename,
-              Eigen::MatrixXd &V,
-              Eigen::MatrixXd &E,
-              Eigen::MatrixXi &F)
-{
-  std::cout << "Writing " << filename << std::endl;
-
-  std::ofstream outfile(filename);
-
-  for (int i = 0; i < V.rows(); i++)
-  {
-    outfile << "v " << V(i, 0) << " " << V(i, 1) << " " << V(i, 2) << std::endl;
-  }
-
-  for (int i = 0; i < E.rows(); i++)
-  {
-    outfile << "l " << E(i, 0) + 1 << " " << E(i, 1) + 1 << std::endl;
-  }
-
-  for (int i = 0; i < F.rows(); i++)
-  {
-    outfile << "f " << F(i, 0) + 1 << " " << F(i, 1) + 1 << " " << F(i, 2) + 1 << std::endl;
-  }
-
-  outfile.close();
 }
