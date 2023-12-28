@@ -1,5 +1,4 @@
-mkdir build
-cd build
+mkdir -p build && cd build
 cmake ..
 make
 if [ $? -ne 0 ]; then
