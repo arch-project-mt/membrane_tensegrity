@@ -21,7 +21,7 @@ namespace dataIO
                Eigen::MatrixXi &F)
   {
     initVEF(V, E, F);
-    std::cout << "Reading " << filename << std::endl;
+//    std::cout << "Reading " << filename << std::endl;
 
     std::ifstream infile(filename);
     std::string line, v, f, l;
@@ -62,7 +62,7 @@ namespace dataIO
                 Eigen::MatrixXd &E,
                 Eigen::MatrixXi &F)
   {
-    std::cout << "Writing " << filename << std::endl;
+//    std::cout << "Writing " << filename << std::endl;
 
     std::ofstream outfile(filename);
 
@@ -111,6 +111,7 @@ namespace dataIO
   // input: V, E, F
   // output: cube, edges
   {
+
     for (int i = 0; i < V.rows(); i++)
     {
       cube.push_back(Eigen::Vector3d(V.row(i)));

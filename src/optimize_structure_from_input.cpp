@@ -41,38 +41,29 @@ int main()
     updatedCube.push_back(cube[i] + di);
   }
   
-  // WriteToCSV(updatedCube, "../iofiles/updated_coordinates1.csv");
+//  WriteToCSV(updatedCube, "../iofiles/updated_coordinates1.csv");
   dataIO::fitOutputDataStructure(V, E, F, updatedCube, edges);
   dataIO::writeObj("../iofiles/test_cube_updated1.obj", V, E, F);
+
+  dataIO::readObj("../iofiles/target_cube.obj", V, E, F);
+  Eigen::MatrixXd target_structure = V.transpose();
 
   bool is_improved = true;
   int max_iteration = 10;
   int iter_num = 1;
   while (iter_num < max_iteration && is_improved)
   {
-    // Eigen::MatrixXd target_structure =
-    //     openMatrixData2("../iofiles/original_coordinates.csv");
-    // Eigen::MatrixXd updated_structure = openMatrixData2(
-    //     "../iofiles/updated_coordinates" + 
-    //     std::to_string(iter_num) + ".csv");
+//    Eigen::MatrixXd target_structure =
+//        openMatrixData2("../iofiles/original_coordinates.csv");
+//    Eigen::MatrixXd updated_structure = openMatrixData2(
+//        "../iofiles/updated_coordinates" +
+//        std::to_string(iter_num) + ".csv");
 
-    // Eigen::MatrixXd target_structure;
-    // Eigen::MatrixXd updated_structure;
-    Eigen::MatrixXd V;
-    Eigen::MatrixXd E;
-    Eigen::MatrixXi F;
-    dataIO::readObj("../iofiles/target_cube.obj", V, E, F);  
-    dataIO::fitInputDataStructure(V, E, F, cube, edges);
-    Eigen::MatrixXd target_structure = V.transpose();
-
-    std::cout << target_structure << std::endl;
+    // read updated structure from obj file
     dataIO::readObj(
-      "../iofiles/test_cube_updated" + std::to_string(iter_num) + ".obj", 
-      V, E, F);
-    dataIO::fitInputDataStructure(V, E, F, updatedCube, edges);
-    Eigen::MatrixXd updatedCube = V.transpose();
-    
-    
+            "../iofiles/test_cube_updated" + std::to_string(iter_num) + ".obj",
+            V, E, F);
+    Eigen::MatrixXd updated_structure = V.transpose();
 
     std::vector<double> default_weights;
     for (int i = 0; i < target_structure.cols(); i++)
@@ -82,7 +73,7 @@ int main()
     MoveToOrigin(target_structure, updated_structure, default_weights);
     RMSDResult res =
         CalcRMSD(target_structure, updated_structure, default_weights);
-    std::cout << res.rmsd_result << std::endl;
+//    std::cout << "iter " << iter_num << ": rmsd = " <<  res.rmsd_result << std::endl;
     for (int i = 0; i < updated_structure.cols(); i++)
     {
       updatedCube[i] = res.optR * updated_structure.col(i);
@@ -117,21 +108,27 @@ int main()
     MoveToOrigin(target_structure, updated_structure, default_weights);
     RMSDResult new_res =
         CalcRMSD(target_structure, updated_structure, default_weights);
-    std::cout << new_res.rmsd_result << std::endl;
+
     for (int i = 0; i < NUM_VERTICES; i++)
     {
       updatedCube[i] = updated_structure.col(i);
     }
-    is_improved = res.rmsd_result - new_res.rmsd_result > 0;
+    float diff = res.rmsd_result - new_res.rmsd_result;
+    is_improved = diff > 0;
     iter_num++;
 
-    // WriteToCSV(updatedCube,
-    //            "../iofiles/updated_coordinates" + std::to_string(iter_num) + ".csv");
+    // output
+    std::cout << "iter" << iter_num << " : rmsd = ";
+    std::cout << new_res.rmsd_result << " | diff = " << diff << std::endl;
+
+//    WriteToCSV(updatedCube,
+//               "../iofiles/updated_coordinates" + std::to_string(iter_num) + ".csv");
+
     dataIO::fitOutputDataStructure(V, E, F, updatedCube, edges);
     dataIO::writeObj(
       "../iofiles/test_cube_updated" + std::to_string(iter_num) + ".obj",
        V, E, F);
   }
-  std::cout << iter_num << std::endl;
+  std::cout << "Optimization finished in " << iter_num << " iterations" << std::endl;
   return 0;
 }

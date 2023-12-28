@@ -4,9 +4,9 @@ project(membrane_tensegrity)
 set(CMAKE_CXX_STANDARD 14)
 
 # https://stackoverflow.com/questions/41361631/optimize-in-cmake-by-default
-# if(NOT CMAKE_BUILD_TYPE)
-#     set(CMAKE_BUILD_TYPE Release)
-# endif()
+ if(NOT CMAKE_BUILD_TYPE)
+     set(CMAKE_BUILD_TYPE Release)
+ endif()
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
