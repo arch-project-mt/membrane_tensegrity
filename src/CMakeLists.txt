@@ -15,10 +15,10 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 find_package(Eigen3 CONFIG REQUIRED)
 
 add_executable(${PROJECT_NAME}
-        # data_io.cpp
-        # data_io.hpp
-        # geometry.h
-        # rmsd.h
+        data_io.cpp
+        data_io.hpp
+        geometry.h
+        rmsd.h
         # rmsd_io.h
         # rmsd_struct.h
 #        test_optimization.cpp
