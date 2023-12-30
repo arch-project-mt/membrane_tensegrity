@@ -97,17 +97,34 @@ Eigen::SparseMatrix<double> calculateAAT(Eigen::MatrixXd &A) {
   return AAT;
 }
 
+void replaceNaNsWithZeros(Eigen::SparseMatrix<double> &matrix) {
+  for (int k = 0; k < matrix.outerSize(); ++k) {
+    for (Eigen::SparseMatrix<double>::InnerIterator it(matrix, k); it; ++it) {
+      if (std::isnan(it.valueRef())) {
+        it.valueRef() = 0.0;
+      }
+    }
+  }
+}
+
 Eigen::MatrixXd computeD(Eigen::SparseMatrix<double> &AAT_x,
                          Eigen::SparseMatrix<double> &AAT_y,
                          Eigen::SparseMatrix<double> &AAT_z,
                          Eigen::MatrixXd &A_x, Eigen::MatrixXd &A_y,
                          Eigen::MatrixXd &A_z, const Eigen::MatrixXd &b) {
-  Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
+  Eigen::SparseQR<Eigen::SparseMatrix<double>, Eigen::COLAMDOrdering<int>>
+      solver;
   Eigen::SparseMatrix<double> AAT = AAT_x + AAT_y + AAT_z;
-  solver.analyzePattern(AAT);
-  solver.factorize(AAT);
+  replaceNaNsWithZeros(AAT);
+  solver.compute(AAT);
+  if (solver.info() != Eigen::Success) {
+    std::cout << "Factorization failed" << std::endl;
+  }
   // Solve (AA^T)x = b
   Eigen::VectorXd x = solver.solve(b);
+  if (solver.info() != Eigen::Success) {
+    std::cout << "Solving failed" << std::endl;
+  }
   // Compute d = A^T x
   Eigen::MatrixXd d(A_x.rows(), 3);
   d.col(0) = A_x.transpose() * x;
