@@ -117,6 +117,7 @@ Eigen::MatrixXd computeD(Eigen::SparseMatrix<double> &AAT_x,
   Eigen::SparseMatrix<double> AAT = AAT_x + AAT_y + AAT_z;
   replaceNaNsWithZeros(AAT);
   solver.compute(AAT);
+
   if (solver.info() != Eigen::Success) {
     std::cout << "Factorization failed" << std::endl;
   }
@@ -209,6 +210,8 @@ void ComputeMatrixAndVector(Eigen::MatrixXd &A_x, Eigen::MatrixXd &A_y,
       Eigen::Vector3d v2 = q_plus - q.position;
       double gamma_qp = CalculateAngle(v2, p.position - q.position);
       double xi_qp = CalculateAngle(v1, p.position - q.position);
+      gamma_qp_vec.push_back(gamma_qp);
+      xi_qp_vec.push_back(xi_qp);
       auto &connectedVerticesp = adjacencyList[p];
       if (connectedVerticesp.size() < 2) {
         continue;
