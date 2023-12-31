@@ -67,8 +67,10 @@ Eigen::Vector3d computeThetaPvP(const Eigen::Vector3d &v_p,
     Eigen::Vector3d v_q = neighbors[i].position;
     double distance =
         (v_p - v_q).norm(); // distance系統の実装が正しいのかを後で確認する
-    res +=
-        (cotangent(gamma_qp[i]) + cotangent(xi_qp[i])) / distance * (v_q - v_p);
+    if (gamma_qp[i] > 0 && xi_qp[i] > 0) {
+      res += (cotangent(gamma_qp[i]) + cotangent(xi_qp[i])) / distance *
+             (v_q - v_p);
+    }
   }
   return res;
 }
