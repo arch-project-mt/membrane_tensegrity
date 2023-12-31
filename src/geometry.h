@@ -30,6 +30,11 @@ struct VertexInfoEqual {
 };
 using AdjacencyType = std::unordered_map<VertexInfo, std::vector<VertexInfo>,
                                          VertexInfoHash, VertexInfoEqual>;
+
+bool isAlmostZero(double value, double epsilon = 1e-6) {
+  return std::abs(value) < epsilon;
+}
+
 double CalculateAngle(const Eigen::Vector3d &v1, const Eigen::Vector3d &v2) {
   /*
   Since cos(θ) = (v1 \cdot v2) / (|v1| |v2|),
@@ -67,7 +72,8 @@ Eigen::Vector3d computeThetaPvP(const Eigen::Vector3d &v_p,
     Eigen::Vector3d v_q = neighbors[i].position;
     double distance =
         (v_p - v_q).norm(); // distance系統の実装が正しいのかを後で確認する
-    if (gamma_qp[i] > 0 && xi_qp[i] > 0) {
+    if (!isAlmostZero(gamma_qp[i]) && !isAlmostZero(xi_qp[i]) &&
+        !isAlmostZero(distance)) {
       res += (cotangent(gamma_qp[i]) + cotangent(xi_qp[i])) / distance *
              (v_q - v_p);
     }
@@ -84,12 +90,20 @@ Eigen::Vector3d computeThetaPvQ(const Eigen::Vector3d &v_p,
   double distance_pq = (v_p - v_q).squaredNorm();
   double distance_q_plus_q = (v_q_plus - v_q).norm();
   double distance_q_minus_q = (v_q_minus - v_q).norm();
-  Eigen::Vector3d term1 =
-      (cotangent(xi_qp) + cotangent(gamma_qp)) / distance_pq * (v_p - v_q);
-  Eigen::Vector3d term2 =
-      (v_q_plus - v_q) / (distance_pq * distance_q_plus_q * sin(xi_qp));
-  Eigen::Vector3d term3 =
-      (v_q_minus - v_q) / (distance_pq * distance_q_minus_q * sin(gamma_qp));
+  Eigen::Vector3d term1 = Eigen::Vector3d::Zero();
+  Eigen::Vector3d term2 = Eigen::Vector3d::Zero();
+  Eigen::Vector3d term3 = Eigen::Vector3d::Zero();
+  if (!isAlmostZero(distance_pq)) {
+    term1 +=
+        (cotangent(xi_qp) + cotangent(gamma_qp)) / distance_pq * (v_p - v_q);
+  }
+  if (!isAlmostZero(distance_pq * distance_q_plus_q * sin(xi_qp))) {
+    term2 += (v_q_plus - v_q) / (distance_pq * distance_q_plus_q * sin(xi_qp));
+  }
+  if (!isAlmostZero(distance_pq * distance_q_minus_q * sin(gamma_qp))) {
+    term3 +=
+        (v_q_minus - v_q) / (distance_pq * distance_q_minus_q * sin(gamma_qp));
+  }
   return term1 - term2 - term3;
 }
 
@@ -224,7 +238,7 @@ void ComputeMatrixAndVector(Eigen::MatrixXd &A_x, Eigen::MatrixXd &A_y,
       Eigen::Vector3d v2p = p_plus - p.position;
       double gamma_pq = CalculateAngle(v2p, q.position - p.position);
       double xi_pq = CalculateAngle(v1p, q.position - p.position);
-      if (gamma_pq != 0 && xi_pq != 0) {
+      if (!isAlmostZero(gamma_pq) && !isAlmostZero(xi_pq)) {
         Eigen::Vector3d thetaQvP = computeThetaPvQ(
             q.position, p.position, p_plus, p_minus, gamma_pq, xi_pq);
         A_x(p.index, q.index) = thetaQvP[0];
