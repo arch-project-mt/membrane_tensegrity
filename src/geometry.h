@@ -70,8 +70,7 @@ Eigen::Vector3d computeThetaPvP(const Eigen::Vector3d &v_p,
   Eigen::Vector3d res = Eigen::Vector3d::Zero();
   for (size_t i = 0; i < neighbors.size(); ++i) {
     Eigen::Vector3d v_q = neighbors[i].position;
-    double distance =
-        (v_p - v_q).norm(); // distance系統の実装が正しいのかを後で確認する
+    double distance = (v_p - v_q).norm();
     if (!isAlmostZero(gamma_qp[i]) && !isAlmostZero(xi_qp[i]) &&
         !isAlmostZero(distance)) {
       res += (cotangent(gamma_qp[i]) + cotangent(xi_qp[i])) / distance *
@@ -87,15 +86,16 @@ Eigen::Vector3d computeThetaPvQ(const Eigen::Vector3d &v_p,
                                 const Eigen::Vector3d &v_q_plus,
                                 const Eigen::Vector3d &v_q_minus,
                                 double gamma_qp, double xi_qp) {
-  double distance_pq = (v_p - v_q).squaredNorm();
+  double distance_pq_square = (v_p - v_q).squaredNorm();
+  double distance_pq = (v_p - v_q).norm();
   double distance_q_plus_q = (v_q_plus - v_q).norm();
   double distance_q_minus_q = (v_q_minus - v_q).norm();
   Eigen::Vector3d term1 = Eigen::Vector3d::Zero();
   Eigen::Vector3d term2 = Eigen::Vector3d::Zero();
   Eigen::Vector3d term3 = Eigen::Vector3d::Zero();
-  if (!isAlmostZero(distance_pq)) {
-    term1 +=
-        (cotangent(xi_qp) + cotangent(gamma_qp)) / distance_pq * (v_p - v_q);
+  if (!isAlmostZero(distance_pq_square)) {
+    term1 += (cotangent(xi_qp) + cotangent(gamma_qp)) / distance_pq_square *
+             (v_p - v_q);
   }
   if (!isAlmostZero(distance_pq * distance_q_plus_q * sin(xi_qp))) {
     term2 += (v_q_plus - v_q) / (distance_pq * distance_q_plus_q * sin(xi_qp));
@@ -241,17 +241,17 @@ void ComputeMatrixAndVector(Eigen::MatrixXd &A_x, Eigen::MatrixXd &A_y,
       if (!isAlmostZero(gamma_pq) && !isAlmostZero(xi_pq)) {
         Eigen::Vector3d thetaQvP = computeThetaPvQ(
             q.position, p.position, p_plus, p_minus, gamma_pq, xi_pq);
-        A_x(p.index, q.index) = thetaQvP[0];
-        A_y(p.index, q.index) = thetaQvP[1];
-        A_z(p.index, q.index) = thetaQvP[2];
+        A_x(p.index, q.index) = isAlmostZero(thetaQvP[0]) ? 0 : thetaQvP[0];
+        A_y(p.index, q.index) = isAlmostZero(thetaQvP[1]) ? 0 : thetaQvP[1];
+        A_z(p.index, q.index) = isAlmostZero(thetaQvP[2]) ? 0 : thetaQvP[2];
       }
     }
     if (gamma_qp_vec.size() > 0) {
       Eigen::Vector3d thetaPvP = computeThetaPvP(
           vertex.first.position, vertex.second, gamma_qp_vec, xi_qp_vec);
-      A_x(p.index, p.index) = thetaPvP[0];
-      A_y(p.index, p.index) = thetaPvP[1];
-      A_z(p.index, p.index) = thetaPvP[2];
+      A_x(p.index, p.index) = isAlmostZero(thetaPvP[0]) ? 0 : thetaPvP[0];
+      A_y(p.index, p.index) = isAlmostZero(thetaPvP[1]) ? 0 : thetaPvP[1];
+      A_z(p.index, p.index) = isAlmostZero(thetaPvP[2]) ? 0 : thetaPvP[2];
     }
     b(p.index) = 2 * M_PI - SumOfAnglesAtVertex(p.position, vertex.second);
   }
