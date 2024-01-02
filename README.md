@@ -47,8 +47,17 @@ docker exec mt ./test_optimization
 ```
 
 ##### (Alternative) Build with CMake
-- Include or exclude file in `CMakeLists.txt`
-- Build & execute with `bash cmake_build.sh` OR use the following commands
+- Set up your configurations in `CMakeLists.txt`
+- Build & execute with 
+```bash
+bash cmake_build.sh # inside docker container
+```
+
+```bash 
+docker exec mt bash cmake_build.sh # outside docker container
+```
+
+- OR use the following commands (inside docker container)
 ```bash
 mkdir build
 cd build
