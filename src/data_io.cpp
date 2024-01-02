@@ -70,10 +70,17 @@ namespace dataIO
     {
       outfile << "v " << V(i, 0) << " " << V(i, 1) << " " << V(i, 2) << std::endl;
     }
-
+    std::vector<std::pair<int, int>> output_edges;
     for (int i = 0; i < E.rows(); i++)
     {
+      int edge_start = E(i, 0);
+      int edge_end = E(i, 1);
+      if (std::find(output_edges.begin(), output_edges.end(), std::make_pair(edge_start, edge_end)) != output_edges.end()){
+        continue;
+      }
       outfile << "l " << E(i, 0) + 1 << " " << E(i, 1) + 1 << std::endl;
+      output_edges.push_back(std::make_pair(edge_start, edge_end));
+      output_edges.push_back(std::make_pair(edge_end, edge_start));
     }
 
     for (int i = 0; i < F.rows(); i++)
