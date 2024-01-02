@@ -3,25 +3,27 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <set>
+#include <utility>
+
 
 namespace dataIO
 {
   void initVEF(Eigen::MatrixXd &V,
-               Eigen::MatrixXd &E,
+               Eigen::MatrixXi &E,
                Eigen::MatrixXi &F)
   {
     V = Eigen::MatrixXd();
-    E = Eigen::MatrixXd();
+    E = Eigen::MatrixXi();
     F = Eigen::MatrixXi();
   }
 
   void readObj(std::string filename,
                Eigen::MatrixXd &V,
-               Eigen::MatrixXd &E,
+               Eigen::MatrixXi &E,
                Eigen::MatrixXi &F)
   {
     initVEF(V, E, F);
-//    std::cout << "Reading " << filename << std::endl;
 
     std::ifstream infile(filename);
     std::string line, v, f, l;
@@ -44,7 +46,6 @@ namespace dataIO
         E.conservativeResize(E.rows() + 1, 2);
         E.row(E.rows() - 1) << x - 1, y - 1;
       }
-
       else if (line[0] == 'f' && line[1] == ' ')
       {
         std::istringstream iss(line);
@@ -59,11 +60,9 @@ namespace dataIO
 
   void writeObj(std::string filename,
                 Eigen::MatrixXd &V,
-                Eigen::MatrixXd &E,
+                Eigen::MatrixXi &E,
                 Eigen::MatrixXi &F)
   {
-//    std::cout << "Writing " << filename << std::endl;
-
     std::ofstream outfile(filename);
 
     for (int i = 0; i < V.rows(); i++)
@@ -91,37 +90,67 @@ namespace dataIO
     outfile.close();
   }
 
-  // Eigen::SparseMatrix<int> makeAdjacencyMatrix(
-  //     Eigen::MatrixXd &V,
-  //     Eigen::MatrixXd &E,
-  //     Eigen::MatrixXi &F)
-  // {
-  //   Eigen::SparseMatrix<int> A = 
-  //     Eigen::SparseMatrix<int>(V.rows(), V.rows());
-  //   //      A.reserve(E.rows() * 2);
-  //   for (int i = 0; i < F.rows(); i++)
-  //   {
-  //     A.insert(F(i, 0), F(i, 1)) = 1;
-  //     A.insert(F(i, 1), F(i, 2)) = 1;
-  //     A.insert(F(i, 2), F(i, 0)) = 1;
-  //   }
-  //   A.makeCompressed();
-  //   return A;
-  // }
+  Eigen::MatrixXi face2edge(Eigen::MatrixXi &F)
+  {
+    Eigen::MatrixXi E;
+    for (int i = 0; i < F.rows(); i++)
+    {
+      E.conservativeResize(E.rows() + 3, 2);
+      E.row(E.rows() - 3) << F(i, 0), F(i, 1);
+      E.row(E.rows() - 2) << F(i, 1), F(i, 2);
+      E.row(E.rows() - 1) << F(i, 2), F(i, 0);
+    }
 
-  // fit to the input data structure defined in geometry.h
+    std::set<std::pair<int, int>> E_set;
+    for (int i = 0; i < E.rows(); i++)
+    {
+      // it returns error when only one direction is added
+      // if (E(i, 0) > E(i, 1))   
+      // {
+      //   std::swap(E(i, 0), E(i, 1));
+      // }
+      E_set.insert({E(i, 0), E(i, 1)});
+      E_set.insert({E(i, 1), E(i, 0)});
+    }
+
+    E = Eigen::MatrixXi::Zero(E_set.size(), 2);
+    int i = 0;
+    for (auto e = E_set.begin(); e != E_set.end(); e++)
+    {
+      E.row(i) << e->first, e->second;
+      i++;
+    }
+
+    return E;
+  }
+
+  Eigen::MatrixXi edge2face(Eigen::MatrixXi &E) // Wrong implementation, still working on it
+  // edge index to face index
+  {
+    Eigen::MatrixXi F = Eigen::MatrixXi::Zero(E.rows() / 3, 3);
+    for (int i = 0; i < E.rows(); i += 3)
+    {
+      F.row(i / 3) << E(i, 0), E(i, 1), E(i + 1, 1);
+    }
+    return F; 
+  }
+
+  // functions for changing data structures across the project
   void fitInputDataStructure(Eigen::MatrixXd &V,
-                             Eigen::MatrixXd &E,
+                             Eigen::MatrixXi &E,
                              Eigen::MatrixXi &F,
                              std::vector<Eigen::Vector3d> &cube,
                              std::vector<std::pair<int, int>> &edges)
   // input: V, E, F
   // output: cube, edges
   {
-
     for (int i = 0; i < V.rows(); i++)
     {
       cube.push_back(Eigen::Vector3d(V.row(i)));
+    }
+    if (F.rows() > 0 && E.rows() == 0)
+    {
+      E = face2edge(F);
     }
     for (int i = 0; i < E.rows(); i++)
     {
@@ -130,10 +159,12 @@ namespace dataIO
   }
 
   void fitOutputDataStructure(Eigen::MatrixXd &V,
-                              Eigen::MatrixXd &E,
+                              Eigen::MatrixXi &E,
                               Eigen::MatrixXi &F,
                               std::vector<Eigen::Vector3d> &cube,
                               std::vector<std::pair<int, int>> &edges)
+  // input: cube, edges
+  // output: V, E, F
   {
     initVEF(V, E, F);
     for (int i = 0; i < cube.size(); i++)

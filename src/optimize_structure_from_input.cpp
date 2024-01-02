@@ -2,20 +2,20 @@
 #include "rmsd.h"
 #include "data_io.hpp"
 
-const int NUM_VERTICES = 8;
-
 
 int main()
 {
-  // initialize data structures
   Eigen::MatrixXd V = Eigen::MatrixXd();
-  Eigen::MatrixXd E = Eigen::MatrixXd();
-  Eigen::MatrixXi F = Eigen::MatrixXi();  
+  Eigen::MatrixXi E = Eigen::MatrixXi();
+  Eigen::MatrixXi F = Eigen::MatrixXi();
   std::vector<Eigen::Vector3d> cube;
   std::vector<std::pair<int, int>> edges;
+  std::string in_filename = "../iofiles/target_cube.obj";
+  std::string out_filename = "../iofiles/updated_cube";
 
-  dataIO::readObj("../iofiles/target_cube.obj", V, E, F);
+  dataIO::readObj(in_filename, V, E, F);
   dataIO::fitInputDataStructure(V, E, F, cube, edges);
+  const int NUM_VERTICES = cube.size();
 
   AdjacencyType adjacencyList;
   MakeAdjacencyList(cube, edges, adjacencyList);
@@ -41,11 +41,10 @@ int main()
     updatedCube.push_back(cube[i] + di);
   }
   
-//  WriteToCSV(updatedCube, "../iofiles/updated_coordinates1.csv");
   dataIO::fitOutputDataStructure(V, E, F, updatedCube, edges);
-  dataIO::writeObj("../iofiles/test_cube_updated1.obj", V, E, F);
+  dataIO::writeObj(out_filename + "1.obj", V, E, F);
 
-  dataIO::readObj("../iofiles/target_cube.obj", V, E, F);
+  dataIO::readObj(in_filename, V, E, F);
   Eigen::MatrixXd target_structure = V.transpose();
 
   bool is_improved = true;
@@ -53,17 +52,13 @@ int main()
   int iter_num = 1;
   while (iter_num < max_iteration && is_improved)
   {
-//    Eigen::MatrixXd target_structure =
-//        openMatrixData2("../iofiles/original_coordinates.csv");
-//    Eigen::MatrixXd updated_structure = openMatrixData2(
-//        "../iofiles/updated_coordinates" +
-//        std::to_string(iter_num) + ".csv");
-
-    // read updated structure from obj file
     dataIO::readObj(
-            "../iofiles/test_cube_updated" + std::to_string(iter_num) + ".obj",
+            out_filename + std::to_string(iter_num) + ".obj",
             V, E, F);
     Eigen::MatrixXd updated_structure = V.transpose();
+    
+  dataIO::readObj(in_filename, V, E, F);
+  Eigen::MatrixXd target_structure = V.transpose();
 
     std::vector<double> default_weights;
     for (int i = 0; i < target_structure.cols(); i++)
@@ -73,7 +68,6 @@ int main()
     MoveToOrigin(target_structure, updated_structure, default_weights);
     RMSDResult res =
         CalcRMSD(target_structure, updated_structure, default_weights);
-//    std::cout << "iter " << iter_num << ": rmsd = " <<  res.rmsd_result << std::endl;
     for (int i = 0; i < updated_structure.cols(); i++)
     {
       updatedCube[i] = res.optR * updated_structure.col(i);
@@ -121,12 +115,9 @@ int main()
     std::cout << "iter" << iter_num << " : rmsd = ";
     std::cout << new_res.rmsd_result << " | diff = " << diff << std::endl;
 
-//    WriteToCSV(updatedCube,
-//               "../iofiles/updated_coordinates" + std::to_string(iter_num) + ".csv");
-
     dataIO::fitOutputDataStructure(V, E, F, updatedCube, edges);
     dataIO::writeObj(
-      "../iofiles/test_cube_updated" + std::to_string(iter_num) + ".obj",
+      out_filename + std::to_string(iter_num) + ".obj",
        V, E, F);
   }
   std::cout << "Optimization finished in " << iter_num << " iterations" << std::endl;

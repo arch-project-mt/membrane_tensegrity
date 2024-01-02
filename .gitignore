@@ -36,3 +36,9 @@
 
 build/
 output/
+
+# CMake files
+cmake-build-debug/
+cmake-build-release/
+
+updated_**  

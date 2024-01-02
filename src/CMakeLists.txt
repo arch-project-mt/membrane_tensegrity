@@ -1,33 +1,32 @@
-cmake_minimum_required(VERSION 3.10)
-project(membrane_tensegrity)
+cmake_minimum_required(VERSION 3.10)    # CMake version check
+project(membrane_tensegrity)            # Create project named "membrane_tensegrity"
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 14)              # set the C++ standard to C++14
 
 # https://stackoverflow.com/questions/41361631/optimize-in-cmake-by-default
  if(NOT CMAKE_BUILD_TYPE)
      set(CMAKE_BUILD_TYPE Release)
  endif()
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
+ # set the compile options
+set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra")   
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
+# find Eigen3 package and you can add more packages here,  
+# you can use #include <Eigen/Dense> in your code
+# don't forget to link them later in target_link_libraries
 find_package(Eigen3 CONFIG REQUIRED)
 
-add_executable(${PROJECT_NAME}
+# add files that need to be compiled here
+add_executable(${PROJECT_NAME}  
         data_io.cpp
-        data_io.hpp
+        data_io.hpp        
         geometry.h
         rmsd.h
-        # rmsd_io.h
-        # rmsd_struct.h
-#        test_optimization.cpp
         optimize_structure_from_input.cpp
 )
 
+# add libraries that need to be linked here
 target_link_libraries(${PROJECT_NAME}
         Eigen3::Eigen
 )
-
-
-
