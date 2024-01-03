@@ -10,8 +10,8 @@ int main()
   Eigen::MatrixXi F = Eigen::MatrixXi();
   std::vector<Eigen::Vector3d> cube;
   std::vector<std::pair<int, int>> edges;
-  std::string in_filename = "../iofiles/target_cube.obj";
-  std::string out_filename = "../iofiles/updated_cube";
+  std::string in_filename = "../iofiles/donuts1.obj";
+  std::string out_filename = "../iofiles/updated_donuts";
 
   dataIO::readObj(in_filename, V, E, F);
   dataIO::fitInputDataStructure(V, E, F, cube, edges);
