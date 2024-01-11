@@ -1,7 +1,7 @@
 import rhinoscriptsyntax as rs
 import Rhino.Geometry as rg
 
-main_path = "/Users/koyanobunsho/Desktop/architecture/membrane_tensegrity/src/"  # Change the path to your directory
+main_path = "your_path"  # Change the path to your directory
 x_coord_list = []
 y_coord_list = []
 z_coord_list = []

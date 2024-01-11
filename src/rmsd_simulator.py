@@ -6,7 +6,7 @@ import subprocess
 
 
 translation_vector = rg.Vector3d(constant, constant, constant)
-main_path = "/Users/koyanobunsho/Desktop/architecture/membrane_tensegrity/src/"
+main_path = "your_path"
 vertices_num = 10
 
 os.chdir(main_path)
