@@ -94,11 +94,6 @@ Eigen::MatrixXi DataIO::face2edge(Eigen::MatrixXi& F)
   std::set<std::pair<int, int>> E_set;
   for (int i = 0; i < E.rows(); i++)
   {
-    // it returns error when only one direction is added
-    // if (E(i, 0) > E(i, 1))   
-    // {
-    //   std::swap(E(i, 0), E(i, 1));
-    // }
     E_set.insert({ E(i, 0), E(i, 1) });
     E_set.insert({ E(i, 1), E(i, 0) });
   }
@@ -112,17 +107,6 @@ Eigen::MatrixXi DataIO::face2edge(Eigen::MatrixXi& F)
   }
 
   return E;
-}
-
-// Wrong implementation, still working on it
-Eigen::MatrixXi DataIO::edge2face(Eigen::MatrixXi& E) 
-{
-  Eigen::MatrixXi F = Eigen::MatrixXi::Zero(E.rows() / 3, 3);
-  for (int i = 0; i < E.rows(); i += 3)
-  {
-    F.row(i / 3) << E(i, 0), E(i, 1), E(i + 1, 1);
-  }
-  return F;
 }
 
 void DataIO::fitInputDataStructure(

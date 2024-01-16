@@ -35,5 +35,4 @@ private:
   void initVEF();
 
   Eigen::MatrixXi face2edge(Eigen::MatrixXi& F);
-  Eigen::MatrixXi edge2face(Eigen::MatrixXi& E);
 };
