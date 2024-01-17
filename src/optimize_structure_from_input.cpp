@@ -5,24 +5,22 @@
 
 int main()
 {
-  Eigen::MatrixXd V = Eigen::MatrixXd();
-  Eigen::MatrixXi E = Eigen::MatrixXi();
-  Eigen::MatrixXi F = Eigen::MatrixXi();
+  DataIO dataIO{};
   std::vector<Eigen::Vector3d> cube;
   std::vector<std::pair<int, int>> edges;
-  std::string in_filename = "../iofiles/donuts1.obj";
-  std::string out_filename = "../iofiles/updated_donuts";
+  std::string in_filename = "../iofiles/target_cube";
+  std::string out_filename = "../iofiles/update_cube";
 
-  dataIO::readObj(in_filename, V, E, F);
-  dataIO::fitInputDataStructure(V, E, F, cube, edges);
+  dataIO.readObj(in_filename);
+  dataIO.fitInputDataStructure(cube, edges);
   const int NUM_VERTICES = cube.size();
 
   AdjacencyType adjacencyList;
   MakeAdjacencyList(cube, edges, adjacencyList);
   writeIndicesToCSV(adjacencyList, "../iofiles/original_edges.csv");
-  for (auto &vertex : adjacencyList)
+  for (auto& vertex : adjacencyList)
   {
-    const VertexInfo &p = vertex.first;
+    const VertexInfo& p = vertex.first;
     SortVerticesCounterClockwise(p.position, vertex.second);
   }
   Eigen::MatrixXd A_x(NUM_VERTICES, NUM_VERTICES);
@@ -40,25 +38,23 @@ int main()
     Eigen::Vector3d di = d.row(i);
     updatedCube.push_back(cube[i] + di);
   }
-  
-  dataIO::fitOutputDataStructure(V, E, F, updatedCube, edges);
-  dataIO::writeObj(out_filename + "1.obj", V, E, F);
 
-  dataIO::readObj(in_filename, V, E, F);
-  Eigen::MatrixXd target_structure = V.transpose();
+  dataIO.fitOutputDataStructure(updatedCube, edges);
+  dataIO.writeObj(out_filename + "1");
+
+  dataIO.readObj(in_filename);
+  Eigen::MatrixXd target_structure = dataIO.V.transpose();
 
   bool is_improved = true;
   int max_iteration = 10;
   int iter_num = 1;
   while (iter_num < max_iteration && is_improved)
   {
-    dataIO::readObj(
-            out_filename + std::to_string(iter_num) + ".obj",
-            V, E, F);
-    Eigen::MatrixXd updated_structure = V.transpose();
-    
-  dataIO::readObj(in_filename, V, E, F);
-  Eigen::MatrixXd target_structure = V.transpose();
+    dataIO.readObj(out_filename + std::to_string(iter_num));
+    Eigen::MatrixXd updated_structure = dataIO.V.transpose();
+
+    dataIO.readObj(in_filename);
+    Eigen::MatrixXd target_structure = dataIO.V.transpose();
 
     std::vector<double> default_weights;
     for (int i = 0; i < target_structure.cols(); i++)
@@ -67,7 +63,7 @@ int main()
     }
     MoveToOrigin(target_structure, updated_structure, default_weights);
     RMSDResult res =
-        CalcRMSD(target_structure, updated_structure, default_weights);
+      CalcRMSD(target_structure, updated_structure, default_weights);
     for (int i = 0; i < updated_structure.cols(); i++)
     {
       updatedCube[i] = res.optR * updated_structure.col(i);
@@ -80,8 +76,8 @@ int main()
     AAT_z = calculateAAT(A_z);
     Eigen::VectorXd c(NUM_VERTICES);
     Eigen::VectorXd cube_x(NUM_VERTICES), cube_y(NUM_VERTICES),
-        cube_z(NUM_VERTICES), updatedCube_x(NUM_VERTICES),
-        updatedCube_y(NUM_VERTICES), updatedCube_z(NUM_VERTICES);
+      cube_z(NUM_VERTICES), updatedCube_x(NUM_VERTICES),
+      updatedCube_y(NUM_VERTICES), updatedCube_z(NUM_VERTICES);
     for (int i = 0; i < NUM_VERTICES; i++)
     {
       cube_x(i) = cube[i][0];
@@ -101,7 +97,7 @@ int main()
     updated_structure.transpose() = target_structure.transpose() + d;
     MoveToOrigin(target_structure, updated_structure, default_weights);
     RMSDResult new_res =
-        CalcRMSD(target_structure, updated_structure, default_weights);
+      CalcRMSD(target_structure, updated_structure, default_weights);
 
     for (int i = 0; i < NUM_VERTICES; i++)
     {
@@ -115,10 +111,8 @@ int main()
     std::cout << "iter" << iter_num << " : rmsd = ";
     std::cout << new_res.rmsd_result << " | diff = " << diff << std::endl;
 
-    dataIO::fitOutputDataStructure(V, E, F, updatedCube, edges);
-    dataIO::writeObj(
-      out_filename + std::to_string(iter_num) + ".obj",
-       V, E, F);
+    dataIO.fitOutputDataStructure(updatedCube, edges);
+    dataIO.writeObj(out_filename + std::to_string(iter_num));
   }
   std::cout << "Optimization finished in " << iter_num << " iterations" << std::endl;
   return 0;
